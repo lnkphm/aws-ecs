@@ -70,11 +70,15 @@ module "ecs_service" {
       base              = 1
     }
   }
+  cpu    = 512
+  memory = 512
 
   # Container definition
   container_definitions = {
     (local.container_name) = {
-      image = "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest"
+      cpu = 512
+      memory = 512
+      image     = "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest"
       port_mappings = [
         {
           name          = local.container_name
