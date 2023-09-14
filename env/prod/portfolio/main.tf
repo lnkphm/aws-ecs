@@ -3,14 +3,13 @@ provider "aws" {
 }
 
 locals {
-  name   = "portfolio-cluster"
+  name = "portfolio-cluster"
 
   container_name = "portfolio"
   container_port = 80
 
   tags = {
     Name       = local.name
-    Example    = local.name
     Terraform  = "true"
     Repository = "https://github.com/lnkphm/aws-ecs"
   }
@@ -21,7 +20,8 @@ locals {
 #########
 
 module "ecs_cluster" {
-  source = "terraform-aws-modules/ecs/aws//modules/cluster"
+  source  = "terraform-aws-modules/ecs/aws//modules/cluster"
+  version = "~> 5.2.2"
 
   cluster_name = local.name
 
@@ -54,7 +54,8 @@ module "ecs_cluster" {
 #########
 
 module "ecs_service" {
-  source = "terraform-aws-modules/ecs/aws//modules/service"
+  source  = "terraform-aws-modules/ecs/aws//modules/service"
+  version = "~> 5.2.2"
 
   # Service
   name        = local.name
@@ -73,7 +74,7 @@ module "ecs_service" {
   # Container definition
   container_definitions = {
     (local.container_name) = {
-      image     = "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest"
+      image = "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest"
       port_mappings = [
         {
           name          = local.container_name
