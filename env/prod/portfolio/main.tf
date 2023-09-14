@@ -12,7 +12,7 @@ locals {
     Name       = local.name
     Example    = local.name
     Terraform  = "true"
-    Repository = "https://github.com/lnkphm/lnkphm-aws-ecs"
+    Repository = "https://github.com/lnkphm/aws-ecs"
   }
 }
 
