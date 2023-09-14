@@ -58,8 +58,14 @@ module "ecs_service" {
   version = "~> 5.2.2"
 
   # Service
-  name        = local.name
-  cluster_arn = module.ecs_cluster.arn
+  name                               = local.name
+  cluster_arn                        = module.ecs_cluster.arn
+  launch_type                        = "EC2"
+  cpu                                = 512
+  memory                             = 512
+  network_mode                       = "awsvpc"
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
 
   # Task definition
   requires_compatibilities = ["EC2"]
@@ -70,15 +76,14 @@ module "ecs_service" {
       base              = 1
     }
   }
-  cpu    = 512
-  memory = 512
 
   # Container definition
   container_definitions = {
     (local.container_name) = {
-      cpu = 512
-      memory = 512
+      cpu       = 512
+      memory    = 512
       image     = "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest"
+      essential = true
       port_mappings = [
         {
           name          = local.container_name
@@ -111,6 +116,9 @@ module "ecs_service" {
       source_security_group_id = module.alb_sg.security_group_id
     }
   }
+
+  autoscaling_min_capacity = 1
+  autoscaling_max_capacity = 1
 
   tags = local.tags
 }
@@ -148,9 +156,8 @@ module "alb" {
 
   load_balancer_type = "application"
 
-  vpc_id  = var.vpc_id
-  subnets = var.public_subnets
-
+  vpc_id          = var.vpc_id
+  subnets         = var.public_subnets
   security_groups = [module.alb_sg.security_group_id]
 
   http_tcp_listeners = [
@@ -235,7 +242,7 @@ module "autoscaling" {
   vpc_zone_identifier = var.private_subnets
 
   health_check_type = "EC2"
-  min_size          = 1
+  min_size          = 0
   max_size          = 1
   desired_capacity  = 1
 
