@@ -134,13 +134,21 @@ module "alb_sg" {
   description = "Service security group"
   vpc_id      = var.vpc_id
 
-  ingress_rules       = ["http-80-tcp"]
+  ingress_rules = [
+    "http-80-tcp",
+    "https-443-tcp"
+  ]
   ingress_cidr_blocks = ["0.0.0.0/0"]
 
   egress_rules       = ["all-all"]
   egress_cidr_blocks = var.private_subnets_cidr_blocks
 
   tags = local.tags
+}
+
+data "aws_acm_certificate" "cert" {
+  domain   = "lnkphm.online"
+  statuses = ["ISSUED"]
 }
 
 module "alb" {
@@ -163,6 +171,15 @@ module "alb" {
     }
   ]
 
+  https_listeners = [
+    {
+      port               = 443
+      protocol           = "HTTPS"
+      certificate_arn    = data.aws_acm_certificate.cert.arn
+      target_group_index = 0
+    }
+  ]
+
   target_groups = [
     {
       name             = "${local.name}-${local.container_name}"
@@ -170,6 +187,7 @@ module "alb" {
       backend_port     = local.container_port
       target_type      = "ip"
     }
+
   ]
 
   tags = local.tags
