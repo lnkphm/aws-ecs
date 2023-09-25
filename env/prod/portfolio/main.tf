@@ -26,8 +26,8 @@ module "ecs_cluster" {
   cluster_name = local.name
 
   cluster_settings = {
-      "name": "containerInsights",
-      "value": "disabled"
+    "name" : "containerInsights",
+    "value" : "disabled"
   }
 
   default_capacity_provider_use_fargate = false
@@ -68,6 +68,7 @@ module "ecs_service" {
   launch_type                        = "EC2"
   deployment_minimum_healthy_percent = 0
   deployment_maximum_percent         = 200
+  health_check_grace_period_seconds  = 300
 
   # Task definition
   cpu                      = 512
@@ -269,6 +270,7 @@ module "autoscaling" {
   min_size          = 0
   max_size          = 1
   desired_capacity  = 1
+  enable_monitoring = false
 
   autoscaling_group_tags = {
     AmazonECSManaged = true
@@ -281,4 +283,3 @@ module "autoscaling" {
 
   tags = local.tags
 }
-
