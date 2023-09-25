@@ -25,6 +25,11 @@ module "ecs_cluster" {
 
   cluster_name = local.name
 
+  cluster_settings = {
+      "name": "containerInsights",
+      "value": "disabled"
+  }
+
   default_capacity_provider_use_fargate = false
 
   autoscaling_capacity_providers = {
